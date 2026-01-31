@@ -50,7 +50,8 @@ export default function Sidebar({ isMobile, onClose }: SidebarProps) {
   const inventoryItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Products", href: "/products", icon: Package },
-    { name: "Stock Ledger", href: "/stock", icon: History },
+    { name: "Stock Ledger", href: "/stock", icon: ArrowRightLeft },
+    { name: "History", href: "/history", icon: History },
   ];
 
   const purchaseItems = [

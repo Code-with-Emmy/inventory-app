@@ -50,7 +50,6 @@ export const createPurchaseSchema = z.object({
     invoiceNumber: z.string().optional(),
     purchaseDate: z.string().optional(),
     supplierId: z.string(),
-    userId: z.string(),
     
     totalAmount: z.number().min(0),
     discount: z.number().min(0).default(0),
@@ -67,7 +66,6 @@ export const createPurchaseSchema = z.object({
 
 export const stockMovementSchema = z.object({
     type: z.enum(["IN", "OUT", "ADJUST"]),
-    userId: z.string(),
     productId: z.number(),
     quantity: z.number().int().min(1),
     reason: z.string().optional(),

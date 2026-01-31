@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getPurchases, createPurchase } from "@/app/services/purchase.service";
 import { createPurchaseSchema } from "@/lib/validators";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth";
 
 export async function GET() {
     try {
@@ -13,6 +15,25 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+        
+        if (!token) {
+            return NextResponse.json(
+                { error: "Unauthorized - Please log in" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = await verifyToken(token);
+        
+        if (!userId) {
+            return NextResponse.json(
+                { error: "Invalid session - Please log out and log back in" },
+                { status: 401 }
+            );
+        }
+
         const body = await req.json();
         
         // Handle dates
@@ -25,7 +46,13 @@ export async function POST(req: Request) {
         }
 
         const validated = createPurchaseSchema.parse(body);
-        const purchase = await createPurchase(validated as any);
+        
+        // Add userId from token
+        const purchase = await createPurchase({
+            ...validated,
+            userId,
+        } as any);
+        
         return NextResponse.json(purchase, { status: 201 });
     } catch (error: any) {
         if (error.name === "ZodError") {

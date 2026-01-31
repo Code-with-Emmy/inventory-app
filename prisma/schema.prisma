@@ -30,6 +30,7 @@ model Product {
   sku             String          @unique
   description     String?
   brand           String?
+  color           String?         // e.g., "Space Gray", "Silver", "Gold"
   category        Category        @default(ACCESSORY)
   subCategory     String?
   unitOfMeasure   String?         @default("pcs")

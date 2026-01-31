@@ -13,6 +13,7 @@ export default function NewProductPage() {
     name: "",
     sku: "",
     brand: "",
+    color: "",
     category: "ACCESSORY",
     description: "",
     sellingPrice: 0,
@@ -105,6 +106,15 @@ export default function NewProductPage() {
               setFormData({ ...formData, brand: e.target.value })
             }
             placeholder="e.g. Apple, Samsung"
+          />
+
+          <Input
+            label="Color"
+            value={formData.color}
+            onChange={(e) =>
+              setFormData({ ...formData, color: e.target.value })
+            }
+            placeholder="e.g. Space Black, Silver, Gold"
           />
 
           <Input

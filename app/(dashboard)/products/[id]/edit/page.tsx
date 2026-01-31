@@ -19,6 +19,7 @@ export default function EditProductPage({
     name: "",
     sku: "",
     brand: "",
+    color: "",
     category: "ACCESSORY",
     description: "",
     sellingPrice: 0,
@@ -44,6 +45,7 @@ export default function EditProductPage({
         name: product.name,
         sku: product.sku,
         brand: product.brand || "",
+        color: product.color || "",
         category: product.category,
         description: product.description || "",
         sellingPrice: product.sellingPrice,
@@ -141,6 +143,15 @@ export default function EditProductPage({
               setFormData({ ...formData, brand: e.target.value })
             }
             placeholder="e.g. Apple, Samsung"
+          />
+
+          <Input
+            label="Color"
+            value={formData.color}
+            onChange={(e) =>
+              setFormData({ ...formData, color: e.target.value })
+            }
+            placeholder="e.g. Space Black, Silver, Gold"
           />
 
           <Input

@@ -247,24 +247,24 @@ export default function DashboardPage() {
 
         {/* Sidebar Actions */}
         <div className="space-y-6">
-          <div className="rounded-4xl border border-primary/20 bg-linear-to-br from-primary via-primary to-indigo-700 p-8 text-primary-foreground shadow-[0_20px_50px_rgba(var(--primary),0.2)] relative overflow-hidden group">
-            <div className="absolute top-[-20%] right-[-20%] h-64 w-64 rounded-full bg-white/10 blur-3xl group-hover:bg-white/20 transition-all duration-700" />
+          <div className="rounded-4xl border border-primary/20 bg-primary p-8 text-primary-foreground shadow-[0_20px_50px_rgba(var(--primary),0.2)] relative overflow-hidden group">
+            <div className="absolute top-[-20%] right-[-20%] h-64 w-64 rounded-full bg-primary-foreground/10 blur-3xl group-hover:bg-primary-foreground/20 transition-all duration-700" />
             <div className="relative z-10">
               <h3 className="text-2xl font-black uppercase tracking-tight mb-2">
                 Quick Actions
               </h3>
-              <p className="text-primary-foreground/70 font-medium text-sm mb-8 leading-relaxed">
+              <p className="text-primary-foreground/80 font-medium text-sm mb-8 leading-relaxed">
                 Manage your shop efficiently.
               </p>
               <div className="space-y-4">
                 <Link href="/products/new" className="block">
-                  <button className="w-full rounded-2xl bg-white text-primary px-6 py-4 text-sm font-black hover:bg-white/90 transition-all flex items-center justify-between group/btn shadow-xl shadow-black/10">
+                  <button className="w-full rounded-2xl bg-primary-foreground text-primary px-6 py-4 text-sm font-black hover:opacity-90 transition-all flex items-center justify-between group/btn shadow-xl shadow-black/10">
                     Add Inventory{" "}
                     <Plus className="h-5 w-5 transition-transform group-hover/btn:rotate-90" />
                   </button>
                 </Link>
                 <Link href="/stock" className="block">
-                  <button className="w-full rounded-2xl bg-white/10 border border-white/20 px-6 py-4 text-sm font-black hover:bg-white/20 transition-all flex items-center justify-between group/btn">
+                  <button className="w-full rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20 px-6 py-4 text-sm font-black hover:bg-primary-foreground/20 transition-all flex items-center justify-between group/btn">
                     Manage Stock{" "}
                     <ArrowRightLeft className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                   </button>

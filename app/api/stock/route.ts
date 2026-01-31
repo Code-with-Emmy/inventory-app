@@ -9,10 +9,23 @@ import { verifyToken } from "@/lib/auth";
 export async function POST(req: Request){
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Unathorized");
+    if (!token) {
+        return NextResponse.json(
+            { error: "Unauthorized - Please log in" },
+            { status: 401 }
+        );
+    }
 
-    const {userId } = await verifyToken(token);
     try {
+        const { userId, role } = await verifyToken(token);
+        
+        if (!userId) {
+            return NextResponse.json(
+                { error: "Invalid session - Please log out and log back in" },
+                { status: 401 }
+            );
+        }
+
         const body = await req.json();
         const validated = stockMovementSchema.parse(body);
         
@@ -30,6 +43,7 @@ export async function POST(req: Request){
 
         return NextResponse.json(result, { status: 200 });
     } catch (error: any) {
+        console.error("[STOCK_MOVEMENT_ERROR]:", error);
         const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
         return NextResponse.json(
             { error: errorMessage },

@@ -1,0 +1,237 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String             @id @default(uuid())
+  email          String          @unique
+  name           String?
+  password       String
+  role           Role            @default(STAFF)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  stockMovements StockMovement[]
+  purchases      Purchase[]
+}
+
+model Product {
+  id              Int             @id @default(autoincrement())
+  name            String
+  sku             String          @unique
+  description     String?
+  brand           String?
+  category        Category        @default(ACCESSORY)
+  subCategory     String?
+  unitOfMeasure   String?         @default("pcs")
+  condition       ProductCondition @default(NEW)
+  
+  quantity        Int             @default(0)
+  minQuantity     Int             @default(5)
+  
+  costPrice       Float           @default(0)
+  sellingPrice    Float           @default(0)
+  taxApplicable   Boolean         @default(false)
+  
+  expiryDate      DateTime?
+  batchNumber     String?
+  
+  status          ProductStatus   @default(ACTIVE)
+  
+  images          ProductImage[]
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  stockMovement   StockMovement[]
+  purchaseItems   PurchaseItem[]
+  serializedUnits SerializedUnit[]
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  url       String
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Supplier {
+  id          String     @id @default(uuid())
+  name        String
+  contactName String?
+  email       String?
+  phone       String?
+  address     String?
+  purchases   Purchase[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Purchase {
+  id            String         @id @default(uuid())
+  invoiceNumber String?        @unique
+  purchaseDate  DateTime       @default(now())
+  supplierId    String
+  supplier      Supplier       @relation(fields: [supplierId], references: [id])
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  
+  totalAmount   Float          @default(0)
+  discount      Float          @default(0)
+  tax           Float          @default(0)
+  netAmount     Float          @default(0)
+  
+  status        PurchaseStatus @default(COMPLETED)
+  notes         String?
+  attachmentUrl String?
+  
+  items         PurchaseItem[]
+  payments      Payment[]
+  serializedUnits SerializedUnit[]
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model PurchaseItem {
+  id         String   @id @default(uuid())
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  quantity   Int
+  unitCost   Float
+  totalCost  Float
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  purchaseId       String?
+  purchase         Purchase?     @relation(fields: [purchaseId], references: [id])
+  amount           Float
+  method           PaymentMethod
+  reference        String?
+  bankName         String?       // Or POS terminal name
+  status           PaymentStatus @default(SUCCESS)
+  paymentDate      DateTime      @default(now())
+  
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model StockMovement {
+  id           Int          @id @default(autoincrement())
+  type         MovementType
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  productId    Int
+  product      Product      @relation(fields: [productId], references: [id])
+  quantity     Int
+  
+  reason       String?      // e.g. "Sale", "Damage", "Return", "Initial Stock"
+  referenceId  String?      // ID of Sale or Purchase record
+  
+  beforeQuantity Int
+  afterQuantity  Int
+  
+  createdAt    DateTime     @default(now())
+}
+
+model SerializedUnit {
+  id          String     @id @default(uuid())
+  productId   Int
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  identifier  String     @unique // IMEI, Serial Number
+  status      UnitStatus @default(IN_STOCK)
+  
+  purchaseId  String?
+  purchase    Purchase?  @relation(fields: [purchaseId], references: [id])
+  
+  soldDate    DateTime?
+  salePrice   Float?
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum UnitStatus {
+  IN_STOCK
+  SOLD
+  DAMAGED
+  RETURNED
+  RESERVED
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum Category {
+  PHONE
+  ACCESSORY
+  PART
+  OTHER
+}
+
+enum ProductCondition {
+  NEW
+  USED
+  DAMAGED
+}
+
+enum ProductStatus {
+  ACTIVE
+  OUT_OF_STOCK
+  DISCONTINUED
+  ARCHIVED
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUST
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  POS
+  MOBILE_MONEY
+  CREDIT_CARD
+  DEBIT_CARD
+  CHEQUE
+  OTHER
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model SystemSettings {
+  id                String   @id @default("settings")
+  siteName          String   @default("FluxStock")
+  currency          String   @default("₦")
+  lowStockThreshold Int      @default(5)
+  allowNegativeStock Boolean @default(false)
+  updatedAt         DateTime @updatedAt
+}
